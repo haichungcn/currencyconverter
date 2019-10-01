@@ -1,6 +1,3 @@
-
-let exchangeRate = 0;
-
 const exchangeRates = {
     usd: {
         eur: 0.91,
@@ -61,8 +58,10 @@ async function getRate(from, to){
 async function runProgram(){
     const from = document.getElementById("fromList").value.toLowerCase();
     console.log("User choose from: ", from);
+
     const to = document.getElementById("toList").value.toLowerCase();
     console.log("User choose to: ", to);
+
     let amountEntered = document.getElementById("amountInput").value;
     console.log("User entered: ", amountEntered);
 
@@ -70,6 +69,7 @@ async function runProgram(){
 
     const result = formatCurrency(to, (amountEntered * rate));
     console.log("This is the result: ", result);
+
     const resultArea = document.getElementById("result");
     resultArea.innerHTML = `>>>  ${amountEntered} ${from} in ${to} is ${result}`
 }
