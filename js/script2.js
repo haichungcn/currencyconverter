@@ -35,8 +35,8 @@ const exchangeRates = {
 };
 
 
-function convertCurrency(from, to, amnt) {
-    exchangeRate = exchangeRates[from][to];
+function convertCurrency(from, to, amount) {
+    let exchangeRate = exchangeRates[from][to];
     const result = amount * exchangeRate;
     return result;
 }
@@ -49,30 +49,27 @@ function formatCurrency(type, value) {
     return formatter.format(value);
 }
 
-function checkCurrency(value) {
-    if (value in exchangeRates) {
-        return true;
-    } else { return false; }
+async function getRate(from, to){
+    const currency = from + '_' + to;
+    const url = 'https://free.currencyconverterapi.com/api/v6/convert?q=' + currency + '&compact=y&apiKey=74a2ac3bc6e0d5949617';
+    const apiresult = await fetch(url);
+    const json = await apiresult.json();
+    const rate = json[currency.toUpperCase()].val;
+    return rate;
 }
 
-let currencyFrom = prompt("Please enter the currency to be converted:");
-while (!checkCurrency(currenyFrom)) {
-    currencyFrom = prompt("The currency you entered is NOT in our database, plz enter usd, eur, aud, krw or vnd:");
+async function runProgram(){
+    const from = document.getElementById("fromList").value.toLowerCase();
+    console.log("User choose from: ", from);
+    const to = document.getElementById("toList").value.toLowerCase();
+    console.log("User choose to: ", to);
+    let amountEntered = document.getElementById("amountInput").value;
+    console.log("User entered: ", amountEntered);
+
+    const rate = await getRate(from, to);
+
+    const result = formatCurrency(to, (amountEntered * rate));
+    console.log("This is the result: ", result);
+    const resultArea = document.getElementById("result");
+    resultArea.innerHTML = `>>>  ${amountEntered} ${from} in ${to} is ${result}`
 }
-
-let currencyTo = prompt("Please enter the currency that you want to convert to:");
-while (!checkCurrency(currenyTo)) {
-    currencyTo = prompt("The currency you entered is not in our database, plz enter usd, eur, aud, krw or vnd");
-}
-
-let amount = prompt("Please enter the amount of money to be exchanged:");
-while (isNaN(amount)) {
-    amount = prompt("Not a number, please enter a number only:")
-}
-
-const result = convertCurrency(currencyFrom, currencyTo, amount);
-
-console.log("The amount of ", amount, currencyFrom, " in ", currencyTo, " is ", formatCurrency(currencyTo, result));
-
-document.getElementById('conversion').innerHTML = formatCurrency(currencyTo, result);
-
