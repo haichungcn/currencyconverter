@@ -27,7 +27,7 @@ let database = {
 let newAmount = 0;
 
 function changeCal(amnt) {
-    let amountOfBills = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let newAmountOfBills = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     newAmount = amnt;
     // checking which key in the database is the closest to amnt, if there is one,
     // copy its values to amountOfBills,
@@ -35,30 +35,39 @@ function changeCal(amnt) {
     
     let listKeysDatabase = Object.keys(database);
     listKeysDatabase.sort(function(a, b){return b-a});
-    let found = listKeysDatabase.find(function(element) {
-      return element <= amnt;
-    });
-
-    amountOfBills = database[found];
-    // console.log("found is", found, "and amountOfBills is", amountOfBills);
-    newAmount = amnt - parseInt(found);
-    // console.log("newAmount is ", newAmount,"the database-500k is ", database["500000"]);
-
-    let newAmountOfBills = [];
-    amountOfBills.forEach(function(item){
-      newAmountOfBills.push(item); 
-    })
+  
 
     for (let i = 0; i < listOfBills.length; i++) {
         // console.log("recursion of i", i, "and amount is ", newAmount);
 
-        while (newAmount >= listOfBills[i]) {
+        // this part check the database for existing value
+        let found = listKeysDatabase.find(function(element) {
+          return element <= newAmount;
+        });
+        // console.log("found", found)
+        if (found) {
+          // console.log("found 1 bill < ", newAmount,"amount of bills:", newAmountOfBills);
+          newAmount -= parseInt(found);
+          let newArray = newAmountOfBills;
+          // console.log("newArray:", newArray, "newAmountOfBilss:", newAmountOfBills);
+          newAmountOfBills = [];
+          for (let i = 0; i < newArray.length; i++) {
+            newAmountOfBills.push(newArray[i] + database[found][i]);
+          }
+        }
+        // console.log("amount of bills after added found bill:", newAmountOfBills);
+
+        //main
+        while (newAmount > listOfBills[i]) {
             newAmount -= listOfBills[i];
             // console.log("amount after reduced by the value of", listOfBills[i], "is ", newAmount, "and value of 500k is ", database["500000"]);
             newAmountOfBills[i] += 1;
             // console.log("the newAmountOfBills right now(", listOfBills[i], ") is:", newAmountOfBills[i], "and value of 500k is ", database["500000"]);
         } 
         // console.log("the amount now is < ", newAmount, "and the newAmountOfBills now is ", newAmountOfBills);
+        if (newAmount < 1000) {
+          break;
+        }
     }
 
     // console.log("after run the loop, the amnt is ", newAmount, "and the newAmountOfBills now is ", newAmountOfBills);
